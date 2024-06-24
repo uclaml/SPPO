@@ -18,8 +18,8 @@ Authors: [Yue Wu](https://yuewu.us/)\*, [Zhiqing Sun](https://www.cs.cmu.edu/~zh
 - [Training Scripts](#training-scripts)
 - [Evaluation](#evaluation)
 - [Troubleshoot](#troubleshoot)
-- [Acknowledgements](#acknowledgements)
 - [Citation](#citation)
+- [Acknowledgements](#acknowledgements)
 
 ## About SPPO
 We propose a new self-play framework dubbed SPPO for language model alignment and a new learning objective (called SPPO loss) derived from the self-play framework to fine-tune large language models efficiently. 
@@ -142,10 +142,6 @@ We provide the model configurations used during AlpacaEval 2 in the `models_conf
 ## Troubleshoot
 For questions related to the paper, please contact the authors via email. If you encounter any issues with the code or wish to report a bug, feel free to open an issue on our GitHub repository.
 
-## Acknowledgements
-
-We thank the authors of [The Alignment Handbook](https://github.com/huggingface/alignment-handbook) for their foundational contributions to the training code. We also acknowledge the use of [PairRM](https://github.com/yuchenlin/LLM-Blender) for ranking and [vllm](https://github.com/vllm-project/vllm) for generation.
-
 ## Citation
 
 ```
@@ -155,3 +151,7 @@ We thank the authors of [The Alignment Handbook](https://github.com/huggingface/
   year={2024}
 }
 ```
+
+## Acknowledgements
+
+We thank the authors of [The Alignment Handbook](https://github.com/huggingface/alignment-handbook) for their foundational contributions to the training code. We also acknowledge the use of [PairRM](https://github.com/yuchenlin/LLM-Blender) for ranking and [vllm](https://github.com/vllm-project/vllm) for generation.
