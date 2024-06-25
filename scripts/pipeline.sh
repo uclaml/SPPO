@@ -18,7 +18,7 @@ while [[ "$#" -gt 0 ]]; do
     --learning_rate)
         LEARNING_RATE="$2"
         shift
-        ;;      
+        ;;
     --beta)
         BETA="$2"
         shift

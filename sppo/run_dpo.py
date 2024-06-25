@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# 
-# Adapted from https://github.com/huggingface/alignment-handbook 
+#
+# Adapted from https://github.com/huggingface/alignment-handbook
 
 import logging
 import random
@@ -103,7 +103,7 @@ def main_inner(model_args, data_args, training_args):
         remove_columns=column_names,
         desc="Formatting comparisons with prompt template",
     )
-    
+
     #################################
     # SPPO: Probability of Preference
     #################################
@@ -233,7 +233,7 @@ def main_inner(model_args, data_args, training_args):
         # Restore k,v cache for fast inference
         trainer.model.config.use_cache = True
         trainer.model.config.save_pretrained(training_args.output_dir)
-    
+
     # else:
     #     exit()
 

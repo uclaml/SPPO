@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# 
-# Adapted from https://github.com/huggingface/alignment-handbook 
+#
+# Adapted from https://github.com/huggingface/alignment-handbook
 
 import inspect
 import random
@@ -695,7 +695,7 @@ class DPOTrainer(Trainer):
                     if type_key == "token_type_ids":
                         continue
                     batch[f"{k}{type_key}"] = tokens
-            
+
 
         else:
             chosen_tokens = self.tokenizer(

@@ -2,7 +2,7 @@
 This directory contains various comparisons for three algorithms: DPO, IPO, and KTO. Each algorithm has been run in different hyperparameter configurations to study their performance. Two different models and datasets have been used to compare the performance of each algorithm:
 
 - zephyr-beta-sft and Ultrafeedback
-- OpenHermes-2.5 and the OpenOrca datasets 
+- OpenHermes-2.5 and the OpenOrca datasets
 
 We release a collection containing the datasets and models used for these experiments, if you require the other trained models, we can release them on request.
 You can find a longer decription of there results in our [blogpost](https://huggingface.co/blog/pref-tuning)
@@ -40,9 +40,3 @@ for config in "${configs[@]}"; do
     done
 done
 ```
-
-
-
-
-
-

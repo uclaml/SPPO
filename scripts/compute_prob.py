@@ -33,7 +33,7 @@ def from_ranks(args):
     probs = []
     rm_scores = []
     for idx, score in enumerate(scores):
-        prb = np.zeros((pairs, pairs)) 
+        prb = np.zeros((pairs, pairs))
         for i in range(pairs):
             for j in range(pairs):
                 prb[i][j] = 1 / (1 + np.exp(score[j] - score[i]))

@@ -45,14 +45,14 @@ def apply_template(text, tokenizer):
 
 def main(args):
     data = load_dataset(args.prompts, split="train")
-    
+
     if "mistral" in args.prompts.lower():
         tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
     elif "llama-3" in args.prompts.lower():
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
     else:
         raise ValueError("Must contain model name in the dataset name. Supported models: Mistral/Llama-3")
-    
+
     tokenizer.pad_token = tokenizer.eos_token
 
     prompts_all = [apply_template(data[idx]["prompt"], tokenizer) for idx in range(len(data))]
@@ -71,7 +71,7 @@ def main(args):
 
     data_frac = args.data_frac
     os.makedirs(f"ranking/{args.output_dir}", exist_ok=True)
-    
+
     data_frac, frac_len = args.data_frac, args.frac_len
     prompts_all = split_prompts(prompts_all, frac_len, data_frac)
     candidates_texts = split_prompts(candidates_texts, frac_len, data_frac)

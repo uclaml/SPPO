@@ -78,4 +78,3 @@ all_rank=$!
 wait $all_rank
 
 python3 scripts/compute_prob.py --output_dir $OUTDIR --pairs $PAIRS --frac_len 2600 --prompts $PROMPTS
-

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# 
-# Adapted from https://github.com/huggingface/alignment-handbook 
+#
+# Adapted from https://github.com/huggingface/alignment-handbook
 
 import os
 from typing import List, Literal, Optional

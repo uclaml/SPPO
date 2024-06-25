@@ -14,7 +14,7 @@
 #
 # Adapted from huggingface/transformers: https://github.com/huggingface/transformers/blob/21a2d900eceeded7be9edc445b56877b95eda4ca/setup.py
 
-# Adapted from alignment-handbook: https://github.com/huggingface/alignment-handbook 
+# Adapted from alignment-handbook: https://github.com/huggingface/alignment-handbook
 
 import re
 import shutil
