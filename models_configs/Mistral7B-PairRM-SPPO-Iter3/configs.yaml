@@ -1,0 +1,15 @@
+Mistral7B-PairRM-SPPO-Iter3: # this should be the same as the name as the current directory
+  prompt_template: "Mistral7B-PairRM-SPPO-Iter3/prompt.txt"
+  fn_completions: "vllm_local_completions"
+  completions_kwargs:
+    model_name: "UCLA-AGI/Mistral7B-PairRM-SPPO-Iter3"
+    model_kwargs:
+      dtype: 'bfloat16'
+      tokenizer_mode: "auto"
+      trust_remote_code: True
+    max_new_tokens: 2048
+    temperature: 0.7
+    top_p: 0.9
+    batch_size: 900
+  pretty_name: "Mistral7B-PairRM-SPPO-Iter3" # name in the leaderboard
+  link: "https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter3"
