@@ -1,0 +1,1 @@
+We have uploaded the evaluation configuration for AlpacaEval 2.0 for `Mistral7B-PairRM-SPPO-Iter3`. Please note that for models trained using the current training script, the prompts.txt file differs from the version we previously uploaded.
