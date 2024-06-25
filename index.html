@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
   <!-- Replace the content tag with appropriate information -->
-  <meta name="description" content="SPIN">
-  <meta property="og:title" content="Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models"/>
-  <meta property="og:description" content="SPIN utilizes a self-play mechanism, allowing an LLM to improve itself by playing against its previous iterations."/>
-  <meta property="og:url" content="https://github.com/uclaml/SPIN"/>
+  <meta name="description" content="SPPO">
+  <meta property="og:title" content="Self-Play Preference Optimization for Language Model Alignment"/>
+  <meta property="og:description" content="SPPO is a new self-play algorithm derived from the self-play mechanism to fine-tune large language models efficiently and flexibly."/>
+  <meta property="og:url" content="https://github.com/uclaml/SPPO"/>
   
 
-  <meta name="twitter:title" content="Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models">
-  <meta name="twitter:description" content="SPIN utilizes a self-play mechanism, allowing an LLM to improve itself by playing against its previous iterations.">
+  <meta name="twitter:title" content="Self-Play Preference Optimization for Language Model Alignment">
+  <meta name="twitter:description" content="SPPO is a new self-play algorithm derived from the self-play mechanism to fine-tune large language models efficiently and flexibly.">
   <!-- Keywords for your paper to be indexed by-->
-  <meta name="keywords" content="LLM, self-play, fine-tuning, synthetic data">
+  <meta name="keywords" content="LLM, self-play, fine-tuning, RLHF">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-  <title>Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models</title>
+  <title>Self-Play Preference Optimization for Language Model Alignment</title>
   <link rel="icon" type="image/x-icon" href="static/images/star.ico">
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
   rel="stylesheet">
@@ -45,27 +45,39 @@
       <div class="container is-max-desktop">
         <div class="columns is-centered">
           <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models</h1>
+            <h1 class="title is-1 publication-title">Self-Play Preference Optimization for Language Model Alignment</h1>
             <div class="is-size-5 publication-authors">
               <!-- Paper authors -->
+
               <span class="author-block">
-                <a href="https://sites.google.com/view/zxchen/" target="_blank">Zixiang Chen</a><sup>*</sup>,</span>
-                <span class="author-block">
-                  <a href="https://sites.google.com/g.ucla.edu/yihedeng/home" target="_blank">Yihe Deng</a><sup>*</sup>,</span>
-                  <span class="author-block">
-                    <a href="https://scholar.google.com/citations?user=8foZzX4AAAAJ" target="_blank">Huizhuo Yuan</a><sup>*</sup>,</span>
-                    <span class="author-block">
-                      <a href="https://scholar.google.com/citations?user=FOoKDukAAAAJ" target="_blank">Kaixuan Ji</a>,</span>
-                      <span class="author-block">
-                        <a href="https://web.cs.ucla.edu/~qgu/" target="_blank">Quanquan Gu</a>
-                  </span>
-                  </div>
+                <a href="https://yuewu.us/" target="_blank">Yue Wu</a><sup>1,*</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://www.cs.cmu.edu/~zhiqings/" target="_blank">Zhiqing Sun</a><sup>2,*</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=8foZzX4AAAAJ" target="_blank">Huizhuo Yuan</a><sup>1,*</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=FOoKDukAAAAJ" target="_blank">Kaixuan Ji</a><sup>1</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://www.cs.cmu.edu/~yiming/" target="_blank">Yiming Yang</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://web.cs.ucla.edu/~qgu/" target="_blank">Quanquan Gu</a><sup>1</sup>
+              </span>
+              
+              <div class="is-size-5 publication-authors">
+                <span class="author-block"><sup>1</sup> University of California, Los Angeles</span>
+                <span class="eql-cntrb"><small><br><sup>*</sup> Indicates Equal Contribution</small></span>
+              </div>
+              <div class="is-size-5 publication-authors">
+                <span class="author-block"><sup>2</sup> Carnegie Mellon University</span>
+                <span class="eql-cntrb"><small><br><sup>*</sup> Indicates Equal Contribution</small></span>
+              </div>              
 
-                  <div class="is-size-5 publication-authors">
-                    <span class="author-block">University of California, Los Angeles</span>
-                    <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
-                  </div>
-
+            
                   <div class="column has-text-centered">
                     <div class="publication-links">
                          <!-- Arxiv PDF link -->
