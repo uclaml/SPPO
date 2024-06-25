@@ -77,7 +77,7 @@ new_config_file="recipes/zephyr-7b-beta/dpo/config_full_${dataset_name}.yaml"
 # Copy the original configuration file to the new one
 cp recipes/zephyr-7b-beta/dpo/config_full.yaml "$new_config_file"
 
-python3 update_dataset.py --dataset $DATASET --config "$new_config_file" >"$log_file.log"
+python3 scripts/update_dataset.py --dataset $DATASET --config "$new_config_file" >"$log_file.log"
 
 echo "logging to $log_file.log"
 

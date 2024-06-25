@@ -48,7 +48,7 @@ done
 
 (
     for gpu_id in {0..7}; do
-        CUDA_VISIBLE_DEVICES=$gpu_id python3 generate.py --model $MODEL --maxlen 2048 --output_dir "generated/$OUTDIR" --prompts $PROMPTS --pairs $PAIRS --world_size 1 --frac_len 2600 --data_frac $gpu_id > output_log_${gpu_id}.txt 2>&1 &
+        CUDA_VISIBLE_DEVICES=$gpu_id python3 scripts/generate.py --model $MODEL --maxlen 2048 --output_dir "generated/$OUTDIR" --prompts $PROMPTS --pairs $PAIRS --world_size 1 --frac_len 2600 --data_frac $gpu_id > output_log_${gpu_id}.txt 2>&1 &
     done
     wait
 ) &
@@ -56,7 +56,7 @@ all_gen=$!
 
 wait $all_gen
 
-python3 combine_generate.py --output_dir "generated/$OUTDIR" --numgpu 8 --pairs $PAIRS
+python3 scripts/combine_generate.py --output_dir "generated/$OUTDIR" --numgpu 8 --pairs $PAIRS
 
 
 #####################
@@ -65,11 +65,11 @@ python3 combine_generate.py --output_dir "generated/$OUTDIR" --numgpu 8 --pairs 
 
 # frac length 2600 * num_gpus 8 = 20800, should be larger than the length of the dataset. Change frac_len accordingly when dataset changes
 
-python3 preload.py
+python3 scripts/preload.py
 
 (
     for gpu_id in {0..7}; do
-        CUDA_VISIBLE_DEVICES=$gpu_id python3 rank.py --output_dir $OUTDIR --pairs $PAIRS --numgpu 8 --frac_len 2600 --data_frac $gpu_id --gpu $gpu_id --prompts $PROMPTS > rank_log_${gpu_id}.txt 2>&1 &
+        CUDA_VISIBLE_DEVICES=$gpu_id python3 scripts/rank.py --output_dir $OUTDIR --pairs $PAIRS --numgpu 8 --frac_len 2600 --data_frac $gpu_id --gpu $gpu_id --prompts $PROMPTS > rank_log_${gpu_id}.txt 2>&1 &
     done
     wait
 ) &
@@ -77,5 +77,5 @@ all_rank=$!
 
 wait $all_rank
 
-python3 compute_prob.py --output_dir $OUTDIR --pairs $PAIRS --frac_len 2600 --prompts $PROMPTS
+python3 scripts/compute_prob.py --output_dir $OUTDIR --pairs $PAIRS --frac_len 2600 --prompts $PROMPTS
 
