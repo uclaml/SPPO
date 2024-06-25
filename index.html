@@ -78,7 +78,7 @@
                     <div class="publication-links">
                          <!-- Arxiv PDF link -->
                       <span class="link-block">
-                        <a href="https://arxiv.org/pdf/2401.01335.pdf" target="_blank"
+                        <a href="https://arxiv.org/pdf/2405.00675" target="_blank"
                         class="external-link button is-normal is-rounded is-dark">
                         <span class="icon">
                           <i class="fas fa-file-pdf"></i>
@@ -89,7 +89,7 @@
 
                   <!-- Github link -->
                   <span class="link-block">
-                    <a href="https://github.com/uclaml/SPIN" target="_blank"
+                    <a href="https://github.com/uclaml/SPPO" target="_blank"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                       <i class="fab fa-github"></i>
@@ -111,7 +111,7 @@
 
               <!-- HuggingFace Model Link -->
               <span class="link-block">
-                <a href="https://huggingface.co/collections/UCLA-AGI/zephyr-7b-sft-full-spin-65c361dfca65637272a02c40" target="_blank"
+                <a href="https://huggingface.co/collections/UCLA-AGI/sppo-6635fdd844f2b2e4a94d0b9a" target="_blank"
                 class="external-link button is-normal is-rounded is-dark">
                 <span class="icon">
                   <img src="static/images/hf-logo.svg" alt="My Icon">
@@ -120,7 +120,7 @@
               </a>
               </span>
 
-              <!-- HuggingFace Dataset Link -->
+<!--               <!-- HuggingFace Dataset Link -->
               <span class="link-block">
                 <a href="https://huggingface.co/collections/UCLA-AGI/datasets-spin-65c3624e98d4b589bbc76f3a" target="_blank"
                 class="external-link button is-normal is-rounded is-dark">
@@ -129,7 +129,7 @@
                 </span>
                 <span>Dataset</span>
               </a>
-              </span>
+              </span> -->
 
             </div>
           </div>
@@ -147,25 +147,24 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Harnessing the power of human-annotated data through Supervised Fine-Tuning (SFT) is pivotal for advancing Large Language Models (LLMs). In this paper, we delve into the prospect of growing a strong LLM out of a weak one without the need for acquiring additional human-annotated data. We propose a new fine-tuning method called Self-Play fIne-tuNing (SPIN), which starts from a supervised fine-tuned model. At the heart of SPIN lies a self-play mechanism, where the LLM refines its capability by playing against instances of itself. More specifically, the LLM generates its own training data from its previous iterations, refining its policy by discerning these self-generated responses from those obtained from human-annotated data. Our method progressively elevates the LLM from a nascent model to a formidable one, unlocking the full potential of human-annotated demonstration data for SFT. Theoretically, we prove that the global optimum to the training objective function of our method is achieved only when the LLM policy aligns with the target data distribution. Empirically, we evaluate our method on several benchmark datasets including the HuggingFace Open LLM Leaderboard, MT-Bench, and datasets from Big-Bench. Our results show that SPIN can significantly improve the LLM's performance across a variety of benchmarks and even outperform models trained through direct preference optimization (DPO) supplemented with extra GPT-4 preference data. This sheds light on the promise of self-play, enabling the achievement of human-level performance in LLMs without the need for expert opponents
-        </div>
+          Traditional reinforcement learning from human feedback (RLHF) approaches relying on parametric models like the Bradley-Terry model fall short in capturing the intransitivity and irrationality in human preferences. Recent advancements suggest that directly working with preference probabilities can yield a more accurate reflection of human preferences, enabling more flexible and accurate language model alignment. In this paper, we propose a self-play-based method for language model alignment, which treats the problem as a constant-sum two-player game aimed at identifying the Nash equilibrium policy. Our approach, dubbed Self-Play Preference Optimization (SPPO), approximates the Nash equilibrium through iterative policy updates and enjoys a theoretical convergence guarantee. Our method can effectively increase the log-likelihood of the chosen response and decrease that of the rejected response, which cannot be trivially achieved by symmetric pairwise loss such as Direct Preference Optimization (DPO) and Identity Preference Optimization (IPO). In our experiments, using only 60k prompts (without responses) from the UltraFeedback dataset and without any prompt augmentation, by leveraging a pre-trained preference model PairRM with only 0.4B parameters, SPPO can obtain a model from fine-tuning Mistral-7B-Instruct-v0.2 that achieves the state-of-the-art length-controlled win-rate of 28.53% against GPT-4-Turbo on AlpacaEval 2.0. It also outperforms the (iterative) DPO and IPO on MT-Bench and the Open LLM Leaderboard. Starting from a stronger base model Llama-3-8B-Instruct, we are able to achieve a length-controlled win rate of 38.77%. Notably, the strong performance of SPPO is achieved without additional external supervision (e.g., responses, preferences, etc.) from GPT-4 or other stronger language models.        </div>
       </div>
     </div>
   </div>
 </section>
 <!-- End paper abstract -->
 
-<!-- SPIN. -->
+<!-- SPPO. -->
 <div class="columns is-centered">
   <div class="column is-three-fifths">
     <h2 class="title is-3"> </h2>
-    <h2 class="title is-3">Self-Play Fine-Tuning (SPIN)</h2>
+    <h2 class="title is-3">Self-Play Preference Optimization (SPPO)</h2>
     <p align="center">
       <img src="images/spin_dalle.png" width="250" height="250"/>
     </p>
   </div>
 </div>
-<!--/ SPIN. -->
+<!--/ SPPO. -->
 <!-- Results. -->
 <div class="columns is-centered">
   <div class="column is-three-fifths">
