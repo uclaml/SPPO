@@ -38,7 +38,7 @@ For more details, you can check our paper [here](https://arxiv.org/abs/2405.0067
 ## Released Models
 
 | Model  | AlpacaEval2.0 LC Win Rate | AlpacaEval2.0 Win Rate |
-| ---: | :---: | :---: |
+| :--- | :---: | :---: |
 |🤗[Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2)  | 17.11 | 14.72 |
 |🤗[Mistral-7B-SPPO Iter1](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter1) |24.79 | 23.51|
 |🤗[Mistral-7B-SPPO Iter2](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter2) |26.89 |27.62 |
