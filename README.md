@@ -39,14 +39,14 @@ For more details, you can check our paper [here](https://arxiv.org/abs/2405.0067
 
 | Model  | AlpacaEval2.0 LC Win Rate | AlpacaEval2.0 Win Rate |
 | :---: | :---: | :---: |
-| [Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2)  | 17.11 | 14.72 |
-|[Mistral-7B-SPPO Iter1](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter1) |24.79 | 23.51|
-|[Mistral-7B-SPPO Iter2](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter2) |26.89 |27.62 |
-|[Mistral-7B-SPPO Iter3](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter3) |28.53 |31.02|
-|[Llama-3-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) |22.92 |22.57 |
-|[Llama-3-8B-SPPO Iter1](https://huggingface.co/UCLA-AGI/Llama-3-Instruct-8B-SPPO-Iter1) |31.73 |31.74 |
-|[Llama-3-8B-SPPO Iter2](https://huggingface.co/UCLA-AGI/Llama-3-Instruct-8B-SPPO-Iter2) |35.15 |35.98 |
-|[Llama-3-8B-SPPO Iter3](https://huggingface.co/UCLA-AGI/Llama-3-Instruct-8B-SPPO-Iter3) |38.77 |39.85 |
+| 🤗[Mistral-7B-Instruct-v0.2](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2)  | 17.11 | 14.72 |
+|🤗[Mistral-7B-SPPO Iter1](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter1) |24.79 | 23.51|
+|🤗[Mistral-7B-SPPO Iter2](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter2) |26.89 |27.62 |
+|🤗[Mistral-7B-SPPO Iter3](https://huggingface.co/UCLA-AGI/Mistral7B-PairRM-SPPO-Iter3) |28.53 |31.02|
+|🤗[Llama-3-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) |22.92 |22.57 |
+|🤗[Llama-3-8B-SPPO Iter1](https://huggingface.co/UCLA-AGI/Llama-3-Instruct-8B-SPPO-Iter1) |31.73 |31.74 |
+|🤗[Llama-3-8B-SPPO Iter2](https://huggingface.co/UCLA-AGI/Llama-3-Instruct-8B-SPPO-Iter2) |35.15 |35.98 |
+|🤗[Llama-3-8B-SPPO Iter3](https://huggingface.co/UCLA-AGI/Llama-3-Instruct-8B-SPPO-Iter3) |38.77 |39.85 |
 
 
 ## Environment Setup
@@ -96,7 +96,7 @@ These scripts manage the training iterations, generation, and PairRM ranking pro
 ### Breakdown of Scripts:
 1. **Generation:**
    ```bash
-   python generate.py --model $MODEL --maxlen 2048 --output_dir $OUTPUT_DIR --prompts $PROMPTS
+   python scripts/generate.py --model $MODEL --maxlen 2048 --output_dir $OUTPUT_DIR --prompts $PROMPTS
    ```
 Main parameters:
 - `model`: Specifies the model used for generation. In the first iteration, the model should be either `mistralai/Mistral-7B-Instruct-v0.2` or `meta-llama/Meta-Llama-3-8B-Instruct`.
@@ -110,7 +110,7 @@ Main parameters:
 
 2. **Ranking:**
    ```bash
-   python rank.py --output_dir $OUTPUT_DIR --prompts $PROMPTS
+   python scripts/rank.py --output_dir $OUTPUT_DIR --prompts $PROMPTS
    ```
 Main Parameters:
 - `output_dir`: Specifies the directory paths where intermediate results are saved. Note that the default script attempts to push datasets to Hugging Face under the UCLA-AGI organization. You may need to adjust this to your organization, obtain write access for UCLA-AGI, or disable the `push_to_hub` command if necessary.
@@ -122,7 +122,7 @@ Main Parameters:
 
 3. **Training:**
    ```bash
-   bash pipeline.sh --model $MODEL --iter $ITER --dataset $DATASET --output_dir $OUTPUT_DIR --num 1
+   bash scripts/pipeline.sh --model $MODEL --iter $ITER --dataset $DATASET --output_dir $OUTPUT_DIR --num 1
    ```
 Main Parameters:
 - model: The base model for training.
