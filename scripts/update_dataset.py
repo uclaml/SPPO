@@ -3,7 +3,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str)
-parser.add_argument('--config', type=str, default='recipes/zephyr-7b-beta/dpo/config_full.yaml')
+parser.add_argument('--config', type=str, default='recipes/uclaml-sppo/config_full.yaml')
 args=parser.parse_args()
 # The path to your configuration file
 file_path = args.config

@@ -11,6 +11,6 @@ for i in $(seq 1 $iter_num); do
     PROMPT="UCLA-AGI/data-mistral-7b-instruct-sppo-iter${i}"
     OUT="data-mistral-7b-instruct-sppo-iter${i}"
 
-    bash scriptsgenerate.sh --model $MODEL --prompt $PROMPT --out_path $OUT
+    bash scripts/generate.sh --model $MODEL --prompt $PROMPT --out_path $OUT
     bash scripts/pipeline.sh --model $MODEL --iter $i --dataset "synthetic_data_mistral-7b-instruct-sppo-iter${i}_score" --output_dir $OUTPUT_DIR --num 1
 done

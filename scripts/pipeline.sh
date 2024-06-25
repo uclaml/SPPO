@@ -72,7 +72,7 @@ LEVEL2="${LOSS_TYPE}_${PREF}"
 log_file="iter${ITER}_${LEARNING_RATE}_${BETA}_${OPTIM}_${LOSS_TYPE}_${PREF}"
 
 dataset_name=$(echo "$DATASET" | cut -d '/' -f2)
-new_config_file="recipes/zephyr-7b-beta/dpo/config_full_${dataset_name}.yaml"
+new_config_file="recipes/uclaml-sppo/config_full_${dataset_name}.yaml"
 
 # Copy the original configuration file to the new one
 cp recipes/zephyr-7b-beta/dpo/config_full.yaml "$new_config_file"
