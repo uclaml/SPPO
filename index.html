@@ -184,17 +184,17 @@
 </div>
 <!--/ Results. -->
 
-<!-- SPIN. -->
+<!-- SPPO. -->
 <div class="columns is-centered">
   <div class="column is-three-fifths">
     <h2 class="title is-3"> </h2>
     <h2 class="title is-3">Algorithm</h2>
     <p align="center">
-      <img src="static/images/algorithm.png" height="300"/>
+      <img src="static/images/SPPO.png" height="300"/>
     </p>
   </div>
 </div>
-<!--/ SPIN. -->
+<!--/ SPPO. -->
 
 <!-- Results. -->
 <div class="columns is-centered">
@@ -204,21 +204,23 @@
       <div class="column is-three-fifths">
         <h2 class="title is-3"> </h2>
         <p align="center">
-          <img src="images/iter_openllm.png" height="300"/>
+          <img src="images/table.png" height="300"/>
         </p>
       </div>
     </div>
       <div class="content has-text-justified">
         <p>
-          In this study, we adopt zephyr-7b-sft-full as our base model. This model derives from the pre-trained Mistral-7B and has been further fine-tuned
-          on the SFT dataset Ultrachat200k1 by HuggingFace. From UltraChat200k, We randomly sample 50k prompts and use the base model to generate the synthetic responses. 
-          We evaluate SPIN on a wide range of benchmarks, including the HuggingFace Open LLM Leaderboard, MT-Bench, and datasets from Big-Bench. 
+          In this study, we adopt Mistral-7B-Instruct-v0.2 and Llama-3-8B-Instruct as our base models. The base models are further fine-tuned by SPPO on the 60k prompts dataset from Ultrafeedback. 
+          We use 20k prompts and generate 5 responses per prompt in each iteration. 
+          The preferences among the responses are labeled by PairRM, an efficient pair-wise preference model of size 0.4B.
+          
+          We evaluate SPPO on a wide range of benchmarks, including the HuggingFace Open LLM Leaderboard, MT-Bench, and AlpacaEval 2.0. 
           Our findings highlight several key points: 
         </p>
-        <ul>
-          <li>SPIN markedly enhances model performance across a wide range of evaluation benchmarks by breaking the limit of SFT; </li>
-          <li>even without introducing new human annotated data, SPIN at iteration 0 achieves performance on par to DPO training that utilizes even more data; </li>
-          <li>iterative training is a necessary component in SPIN as it breaks the limit of multi-epoch training.</li>
+        <ul>          
+          <li> The iterative update via self-play can steadily improve the model performance throughout three iterations, boosting the AlpacaEval2.0 win rate up to 16%.</li>
+          <li> SPPO significantly enhances model performance across a wide range of evaluation benchmarks without external supervision from stronger models like GPT-4; </li>
+          <li> Compared with other symmetric pairwise losses such as DPO or IPO, the SPPO loss can effectively increase the log-likelihood of the chosen response and decrease that of the rejected response; </li>
         </ul>
     </div>
   </div>
@@ -231,30 +233,24 @@
       <div id="results-carousel" class="carousel results-carousel">
        <div class="item">
         <!-- Your image here -->
-        <img src="static/images/tab.png"/>
+        <img src="static/images/alpacaeval2.png"/>
         <h2 class="subtitle has-text-centered">
-          Test performance of SPIN based on zephyr-7b-sft-full across HuggingFace Open LLM Leaderboard datasets. 
-          We also denote the average improvement over last iteration in the Average column.
+          AlpacaEval 2.0 evaluation of models in terms of both normal and length-controlled (LC) win rates in percentage (%). SPPO demonstrates steady performance gains across iterations and outperforms other baselines which show a tendency to produce longer responses. Additionally, re-ranking with the PairRM reward model (best-of-16) at test time consistently enhances the performance across all models。 SPPO achieves a high win rate <i>without strong external supervision like GPT-4</i>.
         </h2>
        </div>
       <div class="item">
         <!-- Your image here -->
-        <img src="images/dpo_compare.png"/>
+        <img src="images/leaderboard.png"/>
         <h2 class="subtitle has-text-centered">
-          Performance comparison with DPO training across the six benchmark datasets. 
-          SPIN at iteration 0 achieves comparable performance to DPO training with 62k new data. 
-          At iteration 1, SPIN has already surpassed DPO training on the majority of datasets.
+          Open LLM Leaderboard Evaluation. SPPO fine-tuning improves the base model's performance on different tasks, reaching a state-of-the-art average score of 66.75 for Mistral-7B and 70.29 for Llama-3-8B. For Mistral-7B, subsequent iterations of DPO, IPO, and SPPO see a decline in performance. It is possible that aligning with human preferences (simulated by the PairRM preference model in our study) may not always enhance, and can even detract from overall performance.
         </h2>
       </div>
       <div class="item">
         <!-- Your image here -->
-        <img src="static/images/tab2.png"/>
+        <img src="static/images/density.png"/>
         <h2 class="subtitle has-text-centered">
-          Test performance on other reasoning benchmark datasets for SPIN at different iterations 
-          and zephyr-7b-sft-full. We report the average score for MT-Bench and the accuracy score for 
-          Big Bench datasets under standard few-shot CoT evaluation. On OpenBookQA, we report acc_norm 
-          with 1-shot example as similar to previous literature. As similar to Open LLM Leaderboard evaluation, 
-          we observe a steady improvement in performance on the other benchmark tasks, with no significant degradation.
+          A pairwise loss like DPO can only enlarge the relative probability gap between the winner and loser. <i><a href="https://arxiv.org/abs/2402.13228" target="_blank">Pal et al., 2024</a></i>" observed that DPO only drives the loser's likelihood to be small, but the winner's likelihood barely changes.
+          We observe the same phenomenon and in contrast, SPPO can boost the probability density of the winner. 
         </h2>
       </div>
     </div>
@@ -278,51 +274,17 @@
   </div>
 </div>
 <!--/ Results. -->
-<!-- Image carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-       <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/ablation1.png"/>
-        <h2 class="subtitle has-text-centered">
-          The scaling effect of training size of SPIN compared to SFT on the average score of 
-          Open LLM Leaderboard. For SPIN, we consider training data of sizes 14k, 26k and 50k where 
-          the larger dataset contains the smaller dataset. The starting point for SPIN (with x-axis 0) is the 
-          zephyr-7b-sft-full checkpoint, which has been fine-tuned on Ultrachat200k for 1 epoch. We 
-          report the model performance trained for 1 epoch with SPIN on the varying sizes of dataset. We 
-          additionally compare with SFT, where we fine-tune Mistral-7B on Ultrachat200k for 3 consecutive 
-          epochs and report the model performance at the first epoch as the starting point (with x-axis 0).
-        </h2>
-       </div>
-       <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/ablation2.png"/>
-        <h2 class="subtitle has-text-centered">
-          The SPIN training dynamics of zephyr-7b-sft-full on the 50k synthetic data with 
-          regard to the number of training epochs during iteration 0. We can observe that iterative training is 
-          pivotal as training for more epochs during iteration 0 reaches a limit and cannot surpass iteration 1.
-        </h2>
-       </div>
-    </div>
-  </div>
-</div>
-</div>
-</section>
-<!-- End image carousel -->
+
 
 <!--BibTex citation -->
   <section class="section" id="BibTeX">
     <div class="container is-max-desktop content">
       <h2 class="title">BibTeX</h2>
-      <pre><code>@misc{chen2024selfplay,
-        title={Self-Play Fine-Tuning Converts Weak Language Models to Strong Language Models}, 
-        author={Zixiang Chen and Yihe Deng and Huizhuo Yuan and Kaixuan Ji and Quanquan Gu},
-        year={2024},
-        eprint={2401.01335},
-        archivePrefix={arXiv},
-        primaryClass={cs.LG}
+      <pre><code>@article{wu2024self,
+        title={Self-play preference optimization for language model alignment},
+        author={Wu, Yue and Sun, Zhiqing and Yuan, Huizhuo and Ji, Kaixuan and Yang, Yiming and Gu, Quanquan},
+        year={2024}
+      }
       }</code></pre>
     </div>
 </section>
