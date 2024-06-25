@@ -225,25 +225,31 @@
       <div id="results-carousel" class="carousel results-carousel">
        <div class="item">
         <!-- Your image here -->
+        <p align="center">
         <img src="images/alpacaeval2.png"/>
         <h2 class="subtitle has-text-centered">
           AlpacaEval 2.0 evaluation of models in terms of both normal and length-controlled (LC) win rates in percentage (%). SPPO demonstrates steady performance gains across iterations and outperforms other baselines which show a tendency to produce longer responses. Additionally, re-ranking with the PairRM reward model (best-of-16) at test time consistently enhances the performance across all models。 SPPO achieves a high win rate <i>without strong external supervision like GPT-4</i>.
         </h2>
+        </p>
        </div>
       <div class="item">
         <!-- Your image here -->
+        <p align="center">
         <img src="images/leaderboard.png"/>
         <h2 class="subtitle has-text-centered">
           Open LLM Leaderboard Evaluation. SPPO fine-tuning improves the base model's performance on different tasks, reaching a state-of-the-art average score of 66.75 for Mistral-7B and 70.29 for Llama-3-8B. For Mistral-7B, subsequent iterations of DPO, IPO, and SPPO see a decline in performance. It is possible that aligning with human preferences (simulated by the PairRM preference model in our study) may not always enhance, and can even detract from overall performance.
         </h2>
+        </p>
       </div>
       <div class="item">
         <!-- Your image here -->
+        <p align="center">
         <img src="images/density.png"/>
         <h2 class="subtitle has-text-centered">
           A pairwise loss like DPO can only enlarge the relative probability gap between the winner and loser. <a href="https://arxiv.org/abs/2402.13228" target="_blank">Pal et al., 2024</a> observed that DPO only drives the loser's likelihood to be small, but the winner's likelihood barely changes.
           We observe the same phenomenon and in contrast, SPPO can boost the probability density of the winner. 
         </h2>
+        </p>
       </div>
     </div>
   </div>
