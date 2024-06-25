@@ -35,7 +35,7 @@ SPPO can significantly enhance the performance of an LLM without strong external
 For more details, you can check our paper [here](https://arxiv.org/abs/2405.00675).
 
 
-## Released Models
+## Base Models and Released Models
 
 | Model  | AlpacaEval2.0 LC Win Rate | AlpacaEval2.0 Win Rate |
 | :--- | :---: | :---: |
