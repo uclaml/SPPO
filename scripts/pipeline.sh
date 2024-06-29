@@ -12,6 +12,8 @@ PREF="sppo_score"
 NUM=18
 MODEL="mistralai/Mistral-7B-Instruct-v0.2"
 DATASET="synthetic_data_mistral-7b-instruct-sppo-iter1_score"
+BATCH_SIZE=8
+ACCUMULATE=1
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -55,6 +57,14 @@ while [[ "$#" -gt 0 ]]; do
         NUM="$2"
         shift
         ;;
+    --batch_size)
+        BATCH_SIZE="$2"
+        shift
+        ;;
+    --accumulate)
+        ACCUMULATE="$2"
+        shift
+        ;;
     *)
         echo "Unknown parameter passed: $1"
         exit 1
@@ -75,7 +85,7 @@ dataset_name=$(echo "$DATASET" | cut -d '/' -f2)
 new_config_file="recipes/uclaml-sppo/config_full_${dataset_name}.yaml"
 
 # Copy the original configuration file to the new one
-cp recipes/zephyr-7b-beta/dpo/config_full.yaml "$new_config_file"
+cp recipes/uclaml-sppo/config_full.yaml "$new_config_file"
 
 python3 scripts/update_dataset.py --dataset $DATASET --config "$new_config_file" >"$log_file.log"
 
@@ -91,7 +101,10 @@ ACCELERATE_LOG_LEVEL=info accelerate launch \
     --beta=$BETA \
     --optim="$OPTIM" \
     --output_dir="$OUTPUT_DIR" \
+    --run_name="sppo" \
     --loss_type=$LOSS_TYPE \
+    --per_device_train_batch_size=$BATCH_SIZE \
+    --gradient_accumulation_steps=$ACCUMULATE \
     --model_name_or_path=$MODEL \
     --num_train_epochs=$NUM
 # 2>&1 | tee "${log_file}.log"

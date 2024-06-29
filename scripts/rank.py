@@ -10,6 +10,9 @@ from transformers import AutoTokenizer
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--model", type=str, default="mistralai/Mistral-7B-Instruct-v0.2"
+    )
     parser.add_argument('--output_dir', type=str, default='generated/iter1')
     parser.add_argument("--numgpu", type=int, default=8)
     parser.add_argument('--prompts', type=str, default='UCLA-AGI/data-mistral-7b-instruct-sppo-iter1')
@@ -40,22 +43,27 @@ def split_prompts(prompts, frac_len, data_frac):
 def apply_template(text, tokenizer):
     return tokenizer.apply_chat_template(
         [{"role": "user", "content": text}, {"role": "assistant", "content": "None"}],
-        tokenize=False,
+        tokenize=False, add_generate_prompt=True
     ).split("None")[0]
+
+
 
 def main(args):
     data = load_dataset(args.prompts, split="train")
 
-    if "mistral" in args.prompts.lower():
+    if "mistral" in args.model.lower():
         tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
-    elif "llama-3" in args.prompts.lower():
+    elif "llama-3" in args.model.lower():
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    elif "gemma-2" in args.model.lower():
+        tokenizer = AutoTokenizer.from_pretrained("google/gemma-2-9b-it")
     else:
         raise ValueError("Must contain model name in the dataset name. Supported models: Mistral/Llama-3")
 
     tokenizer.pad_token = tokenizer.eos_token
 
     prompts_all = [apply_template(data[idx]["prompt"], tokenizer) for idx in range(len(data))]
+    print(prompts_all[0])
     pairs = args.pairs
     all_generated = []
 

@@ -40,7 +40,7 @@ def parse_arguments():
 def apply_template(text, tokenizer):
     return tokenizer.apply_chat_template(
         [{"role": "user", "content": text}, {"role": "assistant", "content": "None"}],
-        tokenize=False,
+        tokenize=False, add_generate_prompt=True
     ).split("None")[0]
 
 
@@ -67,15 +67,19 @@ def main():
         tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
     elif "llama-3" in model_path.lower():
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+    elif "gemma-2" in model_path.lower():
+        tokenizer = AutoTokenizer.from_pretrained("google/gemma-2-9b-it")
     else:
         raise ValueError("Model not supported")
     tokenizer.pad_token = tokenizer.eos_token
-
+    # import pdb
+    # pdb.set_trace()
     llm = LLM(
         model=model_path,
         tensor_parallel_size=args.world_size,
     )
     prompts = [apply_template(data[idx]["prompt"], tokenizer) for idx in range(len(data))]
+    print(prompts[0])
     data_frac, frac_len = args.data_frac, args.frac_len
     prompts = split_prompts(prompts, frac_len, data_frac)
 

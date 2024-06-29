@@ -96,26 +96,26 @@ def apply_chat_template(
             chosen_messages = example["chosen"][-1:]
             rejected_messages = example["rejected"][-1:]
             example["text_chosen"] = tokenizer.apply_chat_template(
-                chosen_messages, tokenize=False
+                chosen_messages, tokenize=False, add_generate_prompt=True
             )
             example["text_rejected"] = tokenizer.apply_chat_template(
-                rejected_messages, tokenize=False
+                rejected_messages, tokenize=False, add_generate_prompt=True
             )
             example["text_prompt"] = tokenizer.apply_chat_template(
-                prompt_messages, tokenize=False
+                prompt_messages, tokenize=False, add_generate_prompt=True
             )
         else:
             prompt_messages = example["chosen"][:-1]
             chosen_messages = example["chosen"]
             rejected_messages = example["rejected"]
             example["text_prompt"] = tokenizer.apply_chat_template(
-                prompt_messages, tokenize=False
+                prompt_messages, tokenize=False, add_generate_prompt=True
             )
             example["text_chosen"] = tokenizer.apply_chat_template(
-                chosen_messages, tokenize=False
+                chosen_messages, tokenize=False, add_generate_prompt=True
             )[len(example["text_prompt"]) :]
             example["text_rejected"] = tokenizer.apply_chat_template(
-                rejected_messages, tokenize=False
+                rejected_messages, tokenize=False, add_generate_prompt=True
             )[len(example["text_prompt"]) :]
     else:
         raise ValueError(
