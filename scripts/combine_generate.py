@@ -8,6 +8,7 @@ def parse_arguments():
     parser.add_argument('--output_dir', type=str, default='generated/iter1')
     parser.add_argument("--pairs", type=int, default=5)
     parser.add_argument("--numgpu", type=int, default=8)
+    parser.add_argument("--gpu_ids", type=str, default=None)
     return parser.parse_args()
 
 def main():
@@ -15,7 +16,12 @@ def main():
 
     for j in range(args.pairs):
         results = []
-        for i in range(args.numgpu):
+        if args.gpu_ids is not None:
+            gpus = args.gpu_ids.strip("()").split(' ')
+        else:
+            gpus = range(args.numgpu)
+            
+        for i in gpus:
             file_path = f"{args.output_dir}/responses_{i}_{j}.json"
             print(f'Reading from {file_path}')
             with open(file_path) as f:

@@ -15,6 +15,7 @@ def parse_arguments():
     parser.add_argument("--frac_len", type=int, default=0)
     parser.add_argument("--num_gpu", type=int, default=8)
     parser.add_argument("--org", type=str, default="UCLA-AGI")
+    parser.add_argument("--gpu_ids", type=str, default=None)
     return parser.parse_args()
 
 def from_ranks(args):
@@ -24,11 +25,16 @@ def from_ranks(args):
     print(f"Length of dataset: {len(data)}")
 
     scores = [0 for _ in range(len(data))]
-    for idx in range(num_gpu):
-        locals = np.load(f"ranking/{args.output_dir}/{idx}_{idx}.npy")
+    if args.gpu_ids is not None:
+        gpus = args.gpu_ids.strip("()").split(' ')
+    else:
+        gpus = range(args.num_gpu)
+        
+    for data_frac, idx in enumerate(gpus):
+        locals = np.load(f"ranking/{args.output_dir}/{idx}_{data_frac}.npy")
         locals = list(locals)
         for lidx, sc in enumerate(locals):
-            scores[idx * args.frac_len + lidx] = sc
+            scores[data_frac * args.frac_len + lidx] = sc
 
     probs = []
     rm_scores = []

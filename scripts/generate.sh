@@ -2,6 +2,8 @@ set -e
 set -x
 
 export CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7"
+AVAILABLE_GPUS=(3)
+HF_ORG=UCLA-AGI
 
 MODEL="mistralai/Mistral-7B-Instruct-v0.2"
 OUTDIR="data-mistral-7b-instruct-sppo-iter1"
@@ -46,9 +48,13 @@ done
 
 #frac length 2600 * num_gpus 8 = 20800, should be larger than the length of the dataset. Change frac_len accordingly when dataset changes
 
+FRAC_LEN=$((2600 * 8 / ${#AVAILABLE_GPUS[@]}))
+
 (
-    for gpu_id in {0..7}; do
-        CUDA_VISIBLE_DEVICES=$gpu_id python3 scripts/generate.py --model $MODEL --maxlen 2048 --output_dir "generated/$OUTDIR" --prompts $PROMPTS --pairs $PAIRS --world_size 1 --frac_len 2600 --data_frac $gpu_id > output_log_${gpu_id}.txt 2>&1 &
+    data_frac=-1
+    for gpu_id in ${AVAILABLE_GPUS[@]}; do
+        ((data_frac++));
+        CUDA_VISIBLE_DEVICES=$gpu_id python3 scripts/generate.py --model $MODEL --maxlen 2048 --output_dir "generated/$OUTDIR" --prompts $PROMPTS --pairs $PAIRS --world_size 1 --frac_len $FRAC_LEN --data_frac $data_frac > output_log_${gpu_id}.txt 2>&1 &
     done
     wait
 ) &
@@ -56,7 +62,7 @@ all_gen=$!
 
 wait $all_gen
 
-python3 scripts/combine_generate.py --output_dir "generated/$OUTDIR" --numgpu 8 --pairs $PAIRS
+python3 scripts/combine_generate.py --output_dir "generated/$OUTDIR" --gpu_ids "${AVAILABLE_GPUS[@]}" --pairs $PAIRS
 
 
 #####################
@@ -68,8 +74,10 @@ python3 scripts/combine_generate.py --output_dir "generated/$OUTDIR" --numgpu 8 
 python3 scripts/preload.py
 
 (
-    for gpu_id in {0..7}; do
-        CUDA_VISIBLE_DEVICES=$gpu_id python3 scripts/rank.py --model $MODEL --output_dir $OUTDIR --pairs $PAIRS --numgpu 8 --frac_len 2600 --data_frac $gpu_id --gpu $gpu_id --prompts $PROMPTS > rank_log_${gpu_id}.txt 2>&1 &
+    data_frac=-1
+    for gpu_id in ${AVAILABLE_GPUS[@]}; do
+        ((data_frac++));
+        CUDA_VISIBLE_DEVICES=$gpu_id python3 scripts/rank.py --model $MODEL --output_dir $OUTDIR --pairs $PAIRS --numgpu ${#AVAILABLE_GPUS[@]} --frac_len $FRAC_LEN --data_frac $data_frac --gpu $gpu_id --prompts $PROMPTS > rank_log_${gpu_id}.txt 2>&1 &
     done
     wait
 ) &
@@ -77,4 +85,4 @@ all_rank=$!
 
 wait $all_rank
 
-python3 scripts/compute_prob.py --output_dir $OUTDIR --pairs $PAIRS --frac_len 2600 --prompts $PROMPTS
+python3 scripts/compute_prob.py --org $HF_ORG --gpu_ids "${AVAILABLE_GPUS[@]}" --output_dir $OUTDIR --pairs $PAIRS --frac_len $FRAC_LEN --prompts $PROMPTS
