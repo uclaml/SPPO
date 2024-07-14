@@ -62,7 +62,7 @@ all_gen=$!
 
 wait $all_gen
 
-# python3 scripts/combine_generate.py --output_dir "generated/$OUTDIR" --gpu_ids "${AVAILABLE_GPUS[@]}" --pairs $PAIRS
+python3 scripts/combine_generate.py --output_dir "generated/$OUTDIR" --gpu_ids "$(IFS=, ; echo "${AVAILABLE_GPUS[*]}")" --pairs $PAIRS
 
 
 # #####################
@@ -85,4 +85,4 @@ all_rank=$!
 
 wait $all_rank
 
-python3 scripts/compute_prob.py --org $HF_ORG --gpu_ids "${AVAILABLE_GPUS[@]}" --output_dir $OUTDIR --pairs $PAIRS --frac_len $FRAC_LEN --prompts $PROMPTS
+python3 scripts/compute_prob.py --org $HF_ORG --gpu_ids "$(IFS=, ; echo "${AVAILABLE_GPUS[*]}")" --output_dir $OUTDIR --pairs $PAIRS --frac_len $FRAC_LEN --prompts $PROMPTS

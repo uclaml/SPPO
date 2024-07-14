@@ -26,7 +26,7 @@ def from_ranks(args):
 
     scores = [0 for _ in range(len(data))]
     if args.gpu_ids is not None:
-        gpus = args.gpu_ids.strip("()").split(' ')
+        gpus = args.gpu_ids.strip("()").split(',')
     else:
         gpus = range(args.num_gpu)
 

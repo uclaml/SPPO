@@ -17,7 +17,7 @@ def main():
     for j in range(args.pairs):
         results = []
         if args.gpu_ids is not None:
-            gpus = args.gpu_ids.strip("()").split(' ')
+            gpus = args.gpu_ids.strip("()").split(',')
         else:
             gpus = range(args.numgpu)
 
