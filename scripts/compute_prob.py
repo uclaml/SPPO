@@ -29,7 +29,7 @@ def from_ranks(args):
         gpus = args.gpu_ids.strip("()").split(' ')
     else:
         gpus = range(args.num_gpu)
-        
+
     for data_frac, idx in enumerate(gpus):
         locals = np.load(f"ranking/{args.output_dir}/{idx}_{data_frac}.npy")
         locals = list(locals)

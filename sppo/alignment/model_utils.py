@@ -12,6 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
+# Adapted from https://github.com/huggingface/alignment-handbook
+
 import os
 from pathlib import Path
 from typing import Dict
@@ -26,7 +30,7 @@ from huggingface_hub.utils._errors import RepositoryNotFoundError
 from huggingface_hub.utils._validators import HFValidationError
 from peft import LoraConfig, PeftConfig
 
-from .configs import DataArguments, DPOConfig, ModelArguments, SFTConfig
+from .configs import DataArguments, SPPOConfig, ModelArguments, SFTConfig
 from .data import DEFAULT_CHAT_TEMPLATE
 
 
@@ -113,7 +117,7 @@ def is_adapter_model(model_name_or_path: str, revision: str = "main") -> bool:
     return "adapter_model.safetensors" in repo_files or "adapter_model.bin" in repo_files
 
 
-def get_checkpoint(training_args: SFTConfig | DPOConfig) -> Path | None:
+def get_checkpoint(training_args: SFTConfig | SPPOConfig) -> Path | None:
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir):
         last_checkpoint = get_last_checkpoint(training_args.output_dir)

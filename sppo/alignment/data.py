@@ -27,66 +27,12 @@ def maybe_insert_system_message(messages, tokenizer):
     if "system" in chat_template:
         messages.insert(0, {"role": "system", "content": ""})
 
-
-# def apply_chat_template(
-#     example,
-#     tokenizer,
-#     task: Literal["sft", "generation", "rm", "dpo"],
-# ):
-#     if task in ["sft", "generation"]:
-#         messages = example["messages"]
-#         # We add an empty system message if there is none
-#         maybe_insert_system_message(messages, tokenizer)
-#         example["text"] = tokenizer.apply_chat_template(
-#             messages, tokenize=False, add_generation_prompt=True if task == "generation" else False
-#         )
-#     elif task == "rm":
-#         if all(k in example.keys() for k in ("chosen", "rejected")):
-#             chosen_messages = example["chosen"]
-#             rejected_messages = example["rejected"]
-#             # We add an empty system message if there is none
-#             maybe_insert_system_message(chosen_messages, tokenizer)
-#             maybe_insert_system_message(rejected_messages, tokenizer)
-
-#             example["text_chosen"] = tokenizer.apply_chat_template(chosen_messages, tokenize=False)
-#             example["text_rejected"] = tokenizer.apply_chat_template(rejected_messages, tokenize=False)
-#         else:
-#             raise ValueError(
-#                 f"Could not format example as dialogue for `rm` task! Require `[chosen, rejected]` keys but found {list(example.keys())}"
-#             )
-#     elif task == "dpo":
-#         if all(k in example.keys() for k in ("chosen", "rejected")):
-#             # For DPO, the inputs are triples of (prompt, chosen, rejected), where `chosen` and `rejected` are the final turn of a dialogue
-#             # We therefore need to extract the N-1 turns to form the prompt
-#             prompt_messages = example["chosen"][:-1]
-#             # Prepend a system message if the first message is not a system message
-#             if example["chosen"][0]["role"] != "system":
-#                 prompt_messages.insert(0, {"role": "system", "content": ""})
-#             # Now we extract the final turn to define chosen/rejected responses
-#             chosen_messages = example["chosen"][-1:]
-#             rejected_messages = example["rejected"][-1:]
-#             example["text_chosen"] = tokenizer.apply_chat_template(chosen_messages, tokenize=False)
-#             example["text_rejected"] = tokenizer.apply_chat_template(rejected_messages, tokenize=False)
-#             example["text_prompt"] = tokenizer.apply_chat_template(prompt_messages, tokenize=False)
-#         else:
-#             raise ValueError(
-#                 f"Could not format example as dialogue for `dpo` task! Require `[chosen, rejected]` keys but found {list(example.keys())}"
-#             )
-#     else:
-#         raise ValueError(
-#             f"Task {task} not supported, please ensure that the provided task is one of {['sft', 'generation', 'rm', 'dpo']}"
-#         )
-#     return example
-
 def apply_chat_template(
     example,
     tokenizer,
     skip_system_message,
-    task='dpo',
 ):
     if all(k in example.keys() for k in ("chosen", "rejected")):
-        # For DPO, the inputs are triples of (prompt, chosen, rejected), where `chosen` and `rejected` are the final turn of a dialogue
-        # We therefore need to extract the N-1 turns to form the prompt
         prompt_messages = example["chosen"][:-1]
         # Prepend a system message if the first message is not a system message
         if not skip_system_message:
@@ -119,7 +65,7 @@ def apply_chat_template(
             )[len(example["text_prompt"]) :]
     else:
         raise ValueError(
-            f"Could not format example as dialogue for `dpo` task! Require `[chosen, rejected]` keys but found {list(example.keys())}"
+            f"Could not format example as dialogue for `sppo` task! Require `[chosen, rejected]` keys but found {list(example.keys())}"
         )
     return example
 

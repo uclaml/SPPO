@@ -54,9 +54,9 @@ if is_deepspeed_available():
 #     feature['chosen_probs_lose'] = chosen_probs_lose
 #     return feature
 
-class DPOTrainer(Trainer):
+class SPPOTrainer(Trainer):
     r"""
-    Initialize DPOTrainer.
+    Initialize SPPOTrainer.
 
     Args:
         model (`transformers.PreTrainedModel`):
@@ -65,11 +65,11 @@ class DPOTrainer(Trainer):
             Hugging Face transformer model with a casual language modelling head. Used for implicit reward computation and loss. If no
             reference model is provided, the trainer will create a reference model with the same architecture as the model to be optimized.
         beta (`float`, defaults to 0.1):
-            The beta factor in DPO loss. Higher beta means less divergence from the initial policy. For the IPO loss, beta is the regularization parameter denoted by tau in the paper.
+            The beta factor in DPO loss. In SPPO, eta=1/beta. Higher beta means less divergence from the initial policy. For the IPO loss, beta is the regularization parameter denoted by tau in the paper.
         label_smoothing (`float`, defaults to 0):
             The robust DPO label smoothing parameter from the [cDPO](https://ericmitchell.ai/cdpo.pdf) report that should be between 0 and 0.5.
         loss_type (`str`, defaults to `"sigmoid"`):
-            The type of DPO loss to use. Either `"sigmoid"` the default DPO loss,`"hinge"` loss from [SLiC](https://arxiv.org/abs/2305.10425) paper, `"ipo"` from [IPO](https://arxiv.org/abs/2310.12036) paper, or `"kto"` from the HALOs [report](https://github.com/ContextualAI/HALOs/blob/main/assets/report.pdf).
+            The type of loss to use. 'sppo' reproduces the SPPO algorithms. Other choices are explained as follows: `"sigmoid"` represents the default DPO loss,`"hinge"` loss from [SLiC](https://arxiv.org/abs/2305.10425) paper, `"ipo"` from [IPO](https://arxiv.org/abs/2310.12036) paper, or `"kto"` from the HALOs [report](https://github.com/ContextualAI/HALOs/blob/main/assets/report.pdf).
         args (`transformers.TrainingArguments`):
             The arguments to use for training.
         data_collator (`transformers.DataCollator`):
@@ -125,7 +125,7 @@ class DPOTrainer(Trainer):
             Name of the reference PEFT adapter, when using LoRA with multiple adapters.
     """
 
-    _tag_names = ["trl", "dpo"]
+    _tag_names = ["trl", "sppo"]
 
     def __init__(
         self,
@@ -163,25 +163,25 @@ class DPOTrainer(Trainer):
         if model_init_kwargs is None:
             model_init_kwargs = {}
         elif not isinstance(model, str):
-            raise ValueError("You passed model_kwargs to the DPOTrainer. But your model is already instantiated.")
+            raise ValueError("You passed model_kwargs to the SPPOTrainer. But your model is already instantiated.")
 
         if ref_model_init_kwargs is None:
             ref_model_init_kwargs = {}
         elif not isinstance(ref_model, str):
             raise ValueError(
-                "You passed ref_model_kwargs to the DPOTrainer. But your ref_model is already instantiated."
+                "You passed ref_model_kwargs to the SPPOTrainer. But your ref_model is already instantiated."
             )
 
         if isinstance(model, str):
             warnings.warn(
-                "You passed a model_id to the DPOTrainer. This will automatically create an "
+                "You passed a model_id to the SPPOTrainer. This will automatically create an "
                 "`AutoModelForCausalLM` or a `PeftModel` (if you passed a `peft_config`) for you."
             )
             model = AutoModelForCausalLM.from_pretrained(model, **model_init_kwargs)
 
         if isinstance(ref_model, str):
             warnings.warn(
-                "You passed a ref model_id to the DPOTrainer. This will automatically create an "
+                "You passed a ref model_id to the SPPOTrainer. This will automatically create an "
                 "`AutoModelForCausalLM`"
             )
             ref_model = AutoModelForCausalLM.from_pretrained(ref_model, **ref_model_init_kwargs)
@@ -271,17 +271,17 @@ class DPOTrainer(Trainer):
             self.ref_model = create_reference_model(model)
 
         if tokenizer is None:
-            raise ValueError("tokenizer must be specified to tokenize a DPO dataset.")
+            raise ValueError("tokenizer must be specified to tokenize a SPPO dataset.")
         if max_length is None:
             warnings.warn(
-                "`max_length` is not set in the DPOTrainer's init"
+                "`max_length` is not set in the SPPOTrainer's init"
                 " it will default to `512` by default, but you should do it yourself in the future.",
                 UserWarning,
             )
             max_length = 512
         if max_prompt_length is None:
             warnings.warn(
-                "`max_prompt_length` is not set in the DPOTrainer's init"
+                "`max_prompt_length` is not set in the SPPOTrainer's init"
                 " it will default to `128` by default, but you should do it yourself in the future.",
                 UserWarning,
             )
@@ -289,7 +289,7 @@ class DPOTrainer(Trainer):
 
         if max_target_length is None and self.is_encoder_decoder:
             warnings.warn(
-                "When using an encoder decoder architecture, you should set `max_target_length` in the DPOTrainer's init"
+                "When using an encoder decoder architecture, you should set `max_target_length` in the SPPOTrainer's init"
                 " it will default to `128` by default, but you should do it yourself in the future.",
                 UserWarning,
             )
@@ -578,7 +578,7 @@ class DPOTrainer(Trainer):
         )
 
     def tokenize_row(self, feature, model: Union[PreTrainedModel, nn.Module] = None) -> Dict:
-        """Tokenize a single row from a DPO specific dataset.
+        """Tokenize a single row from a SPPO specific dataset.
 
         At this stage, we don't convert to PyTorch tensors yet; we just handle the truncation
         in case the prompt + chosen or prompt + rejected responses is/are too long. First
@@ -821,7 +821,7 @@ class DPOTrainer(Trainer):
 
         return concatenated_batch
 
-    def dpo_loss(
+    def sppo_loss(
         self,
         policy_chosen_logps: torch.FloatTensor,
         policy_rejected_logps: torch.FloatTensor,
@@ -832,7 +832,7 @@ class DPOTrainer(Trainer):
         chosen_probs_lose: Union[torch.FloatTensor, None] = None,
         reference_free: bool = False,
     ) -> Tuple[torch.FloatTensor, torch.FloatTensor, torch.FloatTensor]:
-        """Compute the DPO loss for a batch of policy and reference model log probabilities.
+        """Compute the SPPO loss for a batch of policy and reference model log probabilities.
 
         Args:
             policy_chosen_logps: Log probabilities of the policy model for the chosen responses. Shape: (batch_size,)
@@ -843,7 +843,7 @@ class DPOTrainer(Trainer):
 
         Returns:
             A tuple of three tensors: (losses, chosen_rewards, rejected_rewards).
-            The losses tensor contains the DPO loss for each example in the batch.
+            The losses tensor contains the SPPO loss for each example in the batch.
             The chosen_rewards and rejected_rewards tensors contain the rewards for the chosen and rejected responses, respectively.
         """
         pi_logratios = policy_chosen_logps - policy_rejected_logps
@@ -860,9 +860,9 @@ class DPOTrainer(Trainer):
         logits_w = policy_chosen_logps - reference_chosen_logps
         logits_l = policy_rejected_logps - reference_rejected_logps
 
-        # The beta is a temperature parameter for the DPO loss, typically something in the range of 0.1 to 0.5.
+        # The beta is a temperature parameter for the DPO loss, typically something in the range of 0.1 to 0.5. In SPPO, beta=1/eta has a different meaning, and is usually chosen around 1e-3.
         # We ignore the reference model as beta -> 0. The label_smoothing parameter encodes our uncertainty about the labels and
-        # calculates a conservative DPO loss.
+        # calculates a conservative SPPO loss.
         if self.loss_type == "sigmoid":
             losses = (
                 -F.logsigmoid(self.beta * logits) * (1 - self.label_smoothing)
@@ -1007,7 +1007,7 @@ class DPOTrainer(Trainer):
         batch: Dict[str, Union[List, torch.LongTensor]],
         train_eval: Literal["train", "eval"] = "train",
     ):
-        """Compute the DPO loss and other metrics for the given batch of inputs for train or test."""
+        """Compute the SPPO loss and other metrics for the given batch of inputs for train or test."""
         metrics = {}
 
         (
@@ -1042,7 +1042,7 @@ class DPOTrainer(Trainer):
                         _,
                     ) = self.concatenated_forward(self.ref_model, batch)
 
-        losses, chosen_rewards, rejected_rewards = self.dpo_loss(
+        losses, chosen_rewards, rejected_rewards = self.sppo_loss(
             policy_chosen_logps,
             policy_rejected_logps,
             reference_chosen_logps,

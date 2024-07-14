@@ -96,7 +96,7 @@ echo "logging to $log_file.log"
 ACCELERATE_LOG_LEVEL=info accelerate launch \
     --config_file recipes/accelerate_configs/deepspeed_zero3.yaml \
     --main_process_port 2930 \
-    sppo/run_dpo.py "$new_config_file" \
+    sppo/run_sppo.py "$new_config_file" \
     --learning_rate=$LEARNING_RATE \
     --beta=$BETA \
     --optim="$OPTIM" \

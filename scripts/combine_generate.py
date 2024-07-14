@@ -20,7 +20,7 @@ def main():
             gpus = args.gpu_ids.strip("()").split(' ')
         else:
             gpus = range(args.numgpu)
-            
+
         for i in gpus:
             file_path = f"{args.output_dir}/responses_{i}_{j}.json"
             print(f'Reading from {file_path}')

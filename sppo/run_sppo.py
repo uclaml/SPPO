@@ -13,7 +13,7 @@ from transformers import AutoModelForCausalLM, set_seed
 
 from alignment import (
     DataArguments,
-    DPOConfig,
+    SPPOConfig,
     H4ArgumentParser,
     ModelArguments,
     apply_chat_template,
@@ -27,7 +27,7 @@ from alignment import (
 )
 
 from peft import PeftConfig, PeftModel
-from trainer import DPOTrainer
+from trainer import SPPOTrainer
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ def load_and_process_datasets(data_args, tokenizer):
 
     raw_datasets = raw_datasets.map(
         apply_chat_template,
-        fn_kwargs={"tokenizer": tokenizer, "task": "dpo", "skip_system_message": True},
+        fn_kwargs={"tokenizer": tokenizer, "skip_system_message": True},
         num_proc=data_args.preprocessing_num_workers,
         remove_columns=column_names,
         desc="Formatting comparisons with prompt template",
@@ -101,7 +101,7 @@ def setup_model(model_args, training_args):
         base_model = AutoModelForCausalLM.from_pretrained(
             peft_config.base_model_name_or_path,
             **model_kwargs,
-        ) 
+        )
         model = PeftModel.from_pretrained(
             base_model,
             model_args.model_name_or_path,
@@ -160,7 +160,7 @@ def save_model_and_results(trainer, training_args, model_args, data_args):
     logger.info("*** Training complete! ***")
 
 def main():
-    parser = H4ArgumentParser((ModelArguments, DataArguments, DPOConfig))
+    parser = H4ArgumentParser((ModelArguments, DataArguments, SPPOConfig))
     model_args, data_args, training_args = parser.parse()
     training_args.do_eval = False
     num_iteration = 1
@@ -192,7 +192,7 @@ def main_inner(model_args, data_args, training_args):
 
     model, ref_model, model_kwargs, ref_model_kwargs = setup_model(model_args, training_args)
 
-    trainer = DPOTrainer(
+    trainer = SPPOTrainer(
         model,
         ref_model,
         model_init_kwargs=model_kwargs,
