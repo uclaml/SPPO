@@ -308,3 +308,7 @@ recipes/
 push_model_to_hub.py
 scripts/test.sh
 .pre.commit-config.yaml
+0.out
+play.ipynb
+playground.py
+Untitled.ipynb

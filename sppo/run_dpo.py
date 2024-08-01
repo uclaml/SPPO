@@ -1,7 +1,18 @@
 #!/usr/bin/env python
+# coding=utf-8
+# Copyright 2023 The HuggingFace Inc. team. All rights reserved.
 #
-# Adapted from https://github.com/huggingface/alignment-handbook
-
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import logging
 import random
 import sys
@@ -13,7 +24,7 @@ from transformers import AutoModelForCausalLM, set_seed
 
 from alignment import (
     DataArguments,
-    SPPOConfig,
+    DPOConfig,
     H4ArgumentParser,
     ModelArguments,
     apply_chat_template,
@@ -27,7 +38,7 @@ from alignment import (
 )
 
 from peft import PeftConfig, PeftModel
-from trainer import SPPOTrainer
+from trl import DPOTrainer
 
 
 logger = logging.getLogger(__name__)
@@ -51,7 +62,7 @@ def setup_logging(log_level):
 def load_and_process_datasets(data_args, tokenizer):
     raw_datasets = get_datasets(
         data_args,
-        splits=["train"],
+        splits=["train", "test"],
     )
     logger.info(
         f"Training on the following splits: {[split + ' : ' + str(dset.num_rows) for split, dset in raw_datasets.items()]}"
@@ -66,7 +77,7 @@ def load_and_process_datasets(data_args, tokenizer):
         desc="Formatting comparisons with prompt template",
     )
 
-    for split in ["train"]:
+    for split in ["train", "test"]:
         raw_datasets[split] = raw_datasets[split].rename_columns(
             {"text_prompt": "prompt", "text_chosen": "chosen", "text_rejected": "rejected"}
         )
@@ -82,7 +93,7 @@ def setup_model(model_args, training_args):
     model_kwargs = dict(
         revision=model_args.model_revision,
         trust_remote_code=model_args.trust_remote_code,
-        use_flash_attention_2=model_args.use_flash_attention_2,
+        attn_implementation=model_args.attn_implementation,
         torch_dtype=torch_dtype,
         use_cache=False if training_args.gradient_checkpointing else True,
         device_map=get_kbit_device_map() if quantization_config is not None else None,
@@ -96,7 +107,7 @@ def setup_model(model_args, training_args):
         model_kwargs = dict(
             revision=model_args.base_model_revision,
             trust_remote_code=model_args.trust_remote_code,
-            use_flash_attention_2=model_args.use_flash_attention_2,
+            attn_implementation=model_args.attn_implementation,
             torch_dtype=torch_dtype,
             use_cache=False if training_args.gradient_checkpointing else True,
             device_map=get_kbit_device_map() if quantization_config is not None else None,
@@ -163,10 +174,10 @@ def save_model_and_results(trainer, training_args, model_args, data_args):
     logger.info("*** Training complete! ***")
 
 def main():
-    parser = H4ArgumentParser((ModelArguments, DataArguments, SPPOConfig))
+    parser = H4ArgumentParser((ModelArguments, DataArguments, DPOConfig))
     model_args, data_args, training_args = parser.parse()
 
-    training_args.do_eval = False
+    training_args.do_eval = True
     num_iteration = 1
 
     try:
@@ -196,7 +207,7 @@ def main_inner(model_args, data_args, training_args):
 
     model, ref_model, model_kwargs, ref_model_kwargs = setup_model(model_args, training_args)
 
-    trainer = SPPOTrainer(
+    trainer = DPOTrainer(
         model,
         ref_model,
         model_init_kwargs=model_kwargs,
@@ -204,6 +215,7 @@ def main_inner(model_args, data_args, training_args):
         args=training_args,
         beta=training_args.beta,
         train_dataset=raw_datasets["train"],
+        eval_dataset=raw_datasets["test"],
         tokenizer=tokenizer,
         max_length=training_args.max_length,
         max_prompt_length=training_args.max_prompt_length,
