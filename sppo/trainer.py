@@ -1017,9 +1017,6 @@ class SPPOTrainer(Trainer):
             policy_rejected_logits,
         ) = self.concatenated_forward(model, batch)
 
-        chosen_probs = torch.tensor(batch["chosen_probs"], dtype=float, device=policy_chosen_logps.device)
-        chosen_probs_win = torch.tensor(batch["chosen_probs_win"], dtype=float, device=policy_chosen_logps.device)
-        chosen_probs_lose = torch.tensor(batch["chosen_probs_lose"], dtype=float, device=policy_chosen_logps.device)
         # if reference_chosen_logps and reference_rejected_logps in batch use them, otherwise use the reference model
         if "reference_chosen_logps" in batch and "reference_rejected_logps" in batch:
             reference_chosen_logps = batch["reference_chosen_logps"]
@@ -1041,6 +1038,15 @@ class SPPOTrainer(Trainer):
                         _,
                         _,
                     ) = self.concatenated_forward(self.ref_model, batch)
+
+        if "sppo" in self.loss_type:
+            chosen_probs = torch.tensor(batch["chosen_probs"], dtype=float, device=policy_chosen_logps.device)
+            chosen_probs_win = torch.tensor(batch["chosen_probs_win"], dtype=float, device=policy_chosen_logps.device)
+            chosen_probs_lose = torch.tensor(batch["chosen_probs_lose"], dtype=float, device=policy_chosen_logps.device)
+        else:
+            chosen_probs = None
+            chosen_probs_win = None
+            chosen_probs_lose = None
 
         losses, chosen_rewards, rejected_rewards = self.sppo_loss(
             policy_chosen_logps,

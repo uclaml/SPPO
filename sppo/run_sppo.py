@@ -155,9 +155,9 @@ def save_model_and_results(trainer, training_args, model_args, data_args):
         trainer.model.config.use_cache = True
         trainer.model.config.save_pretrained(training_args.output_dir)
 
-    if training_args.push_to_hub:
-        logger.info("Pushing to hub...")
-        trainer.push_to_hub(**kwargs)
+    # if training_args.push_to_hub:
+    #     logger.info("Pushing to hub...")
+    #     trainer.push_to_hub(**kwargs)
 
     trainer.accelerator.wait_for_everyone()
     logger.info("*** Training complete! ***")

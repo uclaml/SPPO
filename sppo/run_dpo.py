@@ -38,7 +38,7 @@ from alignment import (
 )
 
 from peft import PeftConfig, PeftModel
-from trl import DPOTrainer
+from trainer import SPPOTrainer
 
 
 logger = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ def setup_logging(log_level):
 def load_and_process_datasets(data_args, tokenizer):
     raw_datasets = get_datasets(
         data_args,
-        splits=["train", "test"],
+        splits=data_args.dataset_splits,
     )
     logger.info(
         f"Training on the following splits: {[split + ' : ' + str(dset.num_rows) for split, dset in raw_datasets.items()]}"
@@ -77,7 +77,7 @@ def load_and_process_datasets(data_args, tokenizer):
         desc="Formatting comparisons with prompt template",
     )
 
-    for split in ["train", "test"]:
+    for split in ["train"]:
         raw_datasets[split] = raw_datasets[split].rename_columns(
             {"text_prompt": "prompt", "text_chosen": "chosen", "text_rejected": "rejected"}
         )
@@ -93,7 +93,7 @@ def setup_model(model_args, training_args):
     model_kwargs = dict(
         revision=model_args.model_revision,
         trust_remote_code=model_args.trust_remote_code,
-        attn_implementation=model_args.attn_implementation,
+        use_flash_attention_2=model_args.use_flash_attention_2,
         torch_dtype=torch_dtype,
         use_cache=False if training_args.gradient_checkpointing else True,
         device_map=get_kbit_device_map() if quantization_config is not None else None,
@@ -107,7 +107,7 @@ def setup_model(model_args, training_args):
         model_kwargs = dict(
             revision=model_args.base_model_revision,
             trust_remote_code=model_args.trust_remote_code,
-            attn_implementation=model_args.attn_implementation,
+            use_flash_attention_2=model_args.use_flash_attention_2,
             torch_dtype=torch_dtype,
             use_cache=False if training_args.gradient_checkpointing else True,
             device_map=get_kbit_device_map() if quantization_config is not None else None,
@@ -166,9 +166,9 @@ def save_model_and_results(trainer, training_args, model_args, data_args):
         trainer.model.config.use_cache = True
         trainer.model.config.save_pretrained(training_args.output_dir)
 
-    if training_args.push_to_hub:
-        logger.info("Pushing to hub...")
-        trainer.push_to_hub(**kwargs)
+    # if training_args.push_to_hub:
+    #     logger.info("Pushing to hub...")
+    #     trainer.push_to_hub(**kwargs)
 
     trainer.accelerator.wait_for_everyone()
     logger.info("*** Training complete! ***")
@@ -207,7 +207,7 @@ def main_inner(model_args, data_args, training_args):
 
     model, ref_model, model_kwargs, ref_model_kwargs = setup_model(model_args, training_args)
 
-    trainer = DPOTrainer(
+    trainer = SPPOTrainer(
         model,
         ref_model,
         model_init_kwargs=model_kwargs,
