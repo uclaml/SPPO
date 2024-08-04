@@ -159,6 +159,7 @@ class SPPOTrainer(Trainer):
         ref_model_init_kwargs: Optional[Dict] = None,
         model_adapter_name: str = None,
         ref_adapter_name: str = None,
+        ref_free: bool = False,
     ):
         if model_init_kwargs is None:
             model_init_kwargs = {}
@@ -400,6 +401,8 @@ class SPPOTrainer(Trainer):
                 self.ref_model = self._prepare_deepspeed(self.ref_model)
             else:
                 self.ref_model = self.accelerator.prepare_model(self.ref_model, evaluation_mode=True)
+
+        self.ref_free = ref_free
 
     def _prepare_deepspeed(self, model: PreTrainedModelWrapper):
         # Adapted from accelerate: https://github.com/huggingface/accelerate/blob/739b135f8367becb67ffaada12fe76e3aa60fefd/src/accelerate/accelerator.py#L1473
@@ -848,9 +851,10 @@ class SPPOTrainer(Trainer):
         """
         pi_logratios = policy_chosen_logps - policy_rejected_logps
         if reference_free:
-            ref_logratios = 0
-        else:
-            ref_logratios = reference_chosen_logps - reference_rejected_logps
+            reference_chosen_logps = torch.zeros_like(reference_chosen_logps)
+            reference_rejected_logps = torch.zeros_like(reference_rejected_logps)
+            
+        ref_logratios = reference_chosen_logps - reference_rejected_logps
 
         pi_logratios = pi_logratios.to(self.accelerator.device)
         ref_logratios = ref_logratios.to(self.accelerator.device)
@@ -863,7 +867,7 @@ class SPPOTrainer(Trainer):
         # The beta is a temperature parameter for the DPO loss, typically something in the range of 0.1 to 0.5. In SPPO, beta=1/eta has a different meaning, and is usually chosen around 1e-3.
         # We ignore the reference model as beta -> 0. The label_smoothing parameter encodes our uncertainty about the labels and
         # calculates a conservative SPPO loss.
-        if self.loss_type == "sigmoid":
+        if self.loss_type in "sigmoid":
             losses = (
                 -F.logsigmoid(self.beta * logits) * (1 - self.label_smoothing)
                 - F.logsigmoid(-self.beta * logits) * self.label_smoothing
@@ -1056,7 +1060,7 @@ class SPPOTrainer(Trainer):
             chosen_probs,
             chosen_probs_win,
             chosen_probs_lose,
-            # rejected_probs,
+            self.ref_free,
         )
         reward_accuracies = (chosen_rewards > rejected_rewards).float()
 

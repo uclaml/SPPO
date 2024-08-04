@@ -77,10 +77,17 @@ def load_and_process_datasets(data_args, tokenizer):
         desc="Formatting comparisons with prompt template",
     )
 
-    for split in ["train"]:
+    for split in ["train", "test"]:
         raw_datasets[split] = raw_datasets[split].rename_columns(
             {"text_prompt": "prompt", "text_chosen": "chosen", "text_rejected": "rejected"}
         )
+
+    # Log a few random samples from the training set:
+    for index in random.sample(range(len(raw_datasets["train"])), 3):
+        logger.info(f"Prompt sample {index} of the raw training set:\n\n{raw_datasets['train'][index]['prompt']}")
+        logger.info(f"Chosen sample {index} of the raw training set:\n\n{raw_datasets['train'][index]['chosen']}")
+        logger.info(f"Rejected sample {index} of the raw training set:\n\n{raw_datasets['train'][index]['rejected']}")
+
 
     return raw_datasets
 
@@ -221,6 +228,7 @@ def main_inner(model_args, data_args, training_args):
         max_prompt_length=training_args.max_prompt_length,
         peft_config=get_peft_config(model_args),
         loss_type=training_args.loss_type,
+        ref_free=training_args.ref_free
     )
 
     train_and_evaluate(trainer, raw_datasets, training_args)
