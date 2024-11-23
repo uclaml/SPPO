@@ -152,6 +152,10 @@ We provide the model configurations used during AlpacaEval 2 in the `models_conf
 ## Troubleshoot
 For questions related to the paper, please contact the authors via email. If you encounter any issues with the code or wish to report a bug, feel free to open an issue on our GitHub repository.
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=uclaml/SPPO&type=Date)](https://star-history.com/#uclaml/SPPO&Date)
+
 ## Citation
 
 ```
