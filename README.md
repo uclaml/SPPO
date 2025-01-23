@@ -12,6 +12,7 @@ Authors: [Yue Wu](https://yuewu.us/)\*, [Zhiqing Sun](https://www.cs.cmu.edu/~zh
 
 
 ## 🔔 News
+- **[01/22/2025]** SPPO has been accepted by ICLR2025!
 - **[06/29/2024]** We released [Gemma-2-9B-It-SPPO-Iter3](https://huggingface.co/UCLA-AGI/Gemma-2-9B-It-SPPO-Iter3) trained upon [gemma-2-9b-it](https://huggingface.co/google/gemma-2-9b-it), AlpacaEval 2.0 LC-win rate reached 53.27.
 - **[06/25/2024]** Our code is open-sourced!
 - **[05/01/2024]** Our paper is released on arXiv: https://arxiv.org/abs/2405.00675.
