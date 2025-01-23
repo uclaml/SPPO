@@ -1,8 +1,23 @@
 set -e
 set -x
 
-export CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7"
-AVAILABLE_GPUS=(0 1 2 3 4 5 6 7)
+# Default num GPUs
+NUM_GPUS=8
+
+# Function to generate comma-separated list of GPU IDs
+generate_gpu_list() {
+    local num=$1
+    local list=""
+    for ((i=0; i<num; i++)); do
+        if [ $i -eq 0 ]; then
+            list="$i"
+        else
+            list="$list,$i"
+        fi
+    done
+    echo "$list"
+}
+
 HF_ORG=UCLA-AGI
 
 MODEL="mistralai/Mistral-7B-Instruct-v0.2"
@@ -34,6 +49,10 @@ while [[ "$#" -gt 0 ]]; do
         PROMPTS="$2"
         shift
         ;;
+    --gpus)
+        NUM_GPUS="$2"
+        shift
+        ;;
     *)
         echo "Unknown parameter passed: $1"
         exit 1
@@ -41,6 +60,18 @@ while [[ "$#" -gt 0 ]]; do
     esac
     shift
 done
+
+# Validate number of GPUs
+if [ "$NUM_GPUS" -lt 1 ]; then
+    echo "Error: Number of GPUs must be at least 1"
+    exit 1
+fi
+
+# Generate GPU list and array
+export CUDA_VISIBLE_DEVICES=$(generate_gpu_list $NUM_GPUS)
+AVAILABLE_GPUS=($(seq 0 $((NUM_GPUS-1))))
+
+echo "Using $NUM_GPUS GPUs: $CUDA_VISIBLE_DEVICES"
 
 #####################
 # Generate Data
